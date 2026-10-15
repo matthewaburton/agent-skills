@@ -18,7 +18,7 @@ For each category, here is **how** to verify -- not just what to check.
 ### Accuracy
 
 - **File paths:** Run `ls` or `find` to confirm referenced files exist.
-- **Function/type names:** Grep the codebase to confirm they exist and have the expected signature.
+- **Names:** Grep for every function, type, config key, and build or script target the plan names. Confirm each exists and has the expected signature or definition.
 - **API behavior claims:** Read the relevant source to verify.
 - **Dependency claims:** Check the dependency manifest (e.g. `go.mod`, `package.json`).
 
@@ -26,18 +26,30 @@ For each category, here is **how** to verify -- not just what to check.
 
 - **Execution simulation:** For each step, mentally simulate: does the preceding step produce what this step needs as input?
 - **Contradictions:** Does step N undo or conflict with step M?
-- **Missing steps:** Would the plan leave the project in a broken state if stopped after any given step? (e.g. a component defined but never registered, a new field added in one place but missing from another that must list it)
+- **Broken intermediate states:** Would the plan leave the project broken if stopped after any given step? Common cases:
+  - Something defined but never registered or wired in where the project discovers it
+  - A new entry of a kind the project lists in several places (registries, docs, config) that misses one of them
+  - A check, test, or tool that hard-codes a list the change extends, so it silently skips the new entry
+  - A new dependency direction that the project's architecture rules or linters forbid
+  - New permissions or credentials that lack access to something they need indirectly
+  - Generated artifacts not regenerated after their source changes
+- **Invariants:** If the project's agent instructions declare invariants (things that must never happen), any step that would break one is a blocker. These are always blockers:
+  - Editing a migration that has already been applied
+  - Weakening a test, constraint, or lint rule to make something pass
+  - Removing, stubbing, or disabling existing behavior to clear an error without saying so explicitly
 
 ### Clarity
 
 - **Different-agent test:** Could someone without the surrounding conversation context follow each step unambiguously?
 - **Vague language:** Flag uses of "appropriate," "relevant," "as needed," "properly" that lack specifics about what they mean concretely.
+- **Actionability:** Each step should be concrete enough to implement. Reserve "consider X" for places where real alternatives exist, and say what decides between them.
 
 ### Completeness
 
 - Does the plan include a verification step (build/test/lint)?
 - Does it include documentation or config updates if structural changes are made?
 - Does it follow established patterns visible in the codebase?
+- **Unknowns and assumptions:** Does the plan rely on anything it has not confirmed? Flag assumptions that need checking, and missing context that prevents a confident review.
 
 ## Severity levels
 
