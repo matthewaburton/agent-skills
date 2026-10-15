@@ -55,15 +55,15 @@ Closes #<ID> (only if an ID is provided)
 
 Examples:
 
-- `Add runtime startup validation`
-- `Fix WebSocket reconnection logic`
-- `Update Ant Design to v6`
+- `Add retry limit to export job`
+- `Fix off-by-one in pagination cursor`
+- `Update logging library to v2`
 
 Counterexamples (do not do this):
 
-- `Added runtime startup validation` (past tense)
-- `fix websocket bug` (not capitalized)
-- `Update Ant Design to v6.` (trailing period)
+- `Added retry limit to export job` (past tense)
+- `fix pagination bug` (not capitalized)
+- `Update logging library to v2.` (trailing period)
 
 ### Body (optional; prefer WHY over HOW)
 
@@ -93,7 +93,7 @@ Counterexamples (do not do this):
 
 ### Contextual logic
 
-- Infer the primary intent from the diff (e.g. "Extract hook", "Replace duplicated logic", "Standardize scripts").
+- Infer the primary intent from the diff (e.g. "Extract helper", "Replace duplicated logic", "Standardize scripts").
 - **Do not invent** issue IDs, performance numbers, or behavior claims not evident from the diff or context.
 - If no issue ID is provided, **omit** the footer entirely.
 
@@ -122,29 +122,30 @@ Fix typo in README
 **With body:**
 
 ```
-Extract WebSocket connection logic into hook
+Extract date parsing into shared helper
 
-This commit moves WebSocket connection management from the
-component into a reusable hook. This reduces duplication
-across three components and makes testing easier.
+Three call sites parsed date strings with slightly different
+rules, so the same input could be accepted in one place and
+rejected in another. This commit moves parsing into one helper
+so all callers behave the same way.
 
-- Extract `useWebSocket` hook from `ChatComponent`
-- Update `SessionComponent` and `BuilderComponent` to use hook
-- Add unit tests for hook behavior
+- Add `parseDate` with the strictest of the existing rules
+- Update the three call sites to use `parseDate`
+- Add tests covering the inputs the call sites disagreed on
 ```
 
 **With issue reference:**
 
 ```
-Add runtime startup validation
+Add retry limit to export job
 
-This commit adds validation to ensure the runtime container
-starts correctly before accepting connections. Prevents
-cascading failures when the runtime is misconfigured.
+Failed exports were retried indefinitely, so a permanent error
+kept a worker busy forever. This commit caps retries and marks
+the job failed once the limit is reached.
 
 Fixes:
-- Runtime crashes on invalid environment variables
-- Silent failures when Docker image is missing
+- Jobs retrying forever on a permanent error
+- No failure status recorded for abandoned exports
 
 Closes #123
 ```

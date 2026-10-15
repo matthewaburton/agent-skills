@@ -36,7 +36,7 @@ Each item should be independently verifiable -- you can tell whether it is done 
 - "Add import statement for uuid package" -- trivial, automatic side-effect
 
 **Right level (good):**
-- "Define tool and register it in server wiring"
+- "Add the config option and read it at startup"
 - "Implement handler following existing patterns"
 - "Add tests using existing test fixtures"
 - "Run build/test/lint and fix failures"
