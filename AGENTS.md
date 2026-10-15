@@ -4,14 +4,16 @@ This file provides guidance to AI agents when working with code in this
 repository.
 
 **Sync requirement:** README.md and this file share overlapping content
-(purpose, skill structure, deployment, authoring guidelines, and the available
-skills table). When updating one, check whether the change applies to the other
-and keep them consistent.
+(purpose, skill structure, deployment, customizing copies, authoring
+guidelines, repository maintenance, and the available skills table). When
+updating one, check whether the change applies to the other and keep them
+consistent. `make lint` checks that the skills tables match.
 
 ## Purpose
 
 This is the source-of-truth repository for reusable AI agent skills. Skills are
-designed to be project-agnostic and are copied into target projects as needed.
+designed to be project-agnostic. They are copied into target projects as needed
+and customized there (see "Customizing copies").
 
 ## Skill structure
 
@@ -29,9 +31,10 @@ my-skill/
 
 The frontmatter fields:
 
-- `name`: Slug used to invoke the skill (e.g. `commit-message`)
-- `description`: One-sentence summary used by the agent harness to match
-  invocations; include trigger phrases here
+- `name`: Slug used to invoke the skill (e.g. `commit-message`); must match the
+  directory name
+- `description`: Summary the agent harness uses to decide when to apply the
+  skill; include the slash command, trigger phrases, and key exclusions here
 
 ## Deploying skills to a target project
 
@@ -45,22 +48,52 @@ Target projects are expected to have `.claude/skills/` and `.cursor/skills/` as
 symlinks pointing to `../.agents/skills/`, so no further wiring is needed after
 the copy.
 
+## Customizing copies
+
+Skills here are starting points, not packages to keep in sync. Once copied into
+a project, a skill belongs to that project: customize it freely with the
+project's commands, conventions, and checks. Copies are expected to diverge
+from the generic versions.
+
+Every so often, run `/harvest-skill-updates` from this repository. It finds the
+project copies, shows what each project changed, and helps fold improvements
+that would help every project back into the generic versions here. Nobody needs
+to record which version a copy came from; the harvest infers it from this
+repository's history.
+
 ## Writing new skills
 
-Skills must contain no project-specific references -- no project names, file
-paths, tool names, or domain terminology tied to a particular codebase. Skills
-should generalize across tech stacks. Where examples are needed, use generic
-illustrative ones rather than names from any real project.
+Skills must contain no customer-specific or project-specific content -- no
+customer, engagement, or project names, file paths, tool names, or domain
+terminology tied to a particular codebase. This includes examples: write new
+generic examples rather than adapting ones from a real project. When an idea
+comes from a project's copy of a skill, rewrite it from scratch rather than
+editing the project's text down. Skills should generalize across tech stacks.
 
-The `description` frontmatter field is critical: the agent harness uses it to
-match user intent to the correct skill. Include both the slash command name and
-natural-language trigger phrases.
+The `description` frontmatter field is critical: agents see only `name` and
+`description` when deciding whether a skill applies, and read the body only
+after the skill is invoked. Include the slash command, natural-language trigger
+phrases, and any important exclusions ("Not for ...").
 
 Each skill should document:
-- When to apply (and when not to)
+- When not to use it, if there are real exclusions worth spelling out
 - A concrete procedure
 - Anti-patterns to avoid
 - Related skills to chain into
+
+Write constraints as instructions ("Never ...", "Run ..."), not preferences
+("Consider ...", "It is usually better to ..."). Soft phrasing reads as
+optional. Keep skill files ASCII-only.
+
+## Maintaining this repository
+
+- `make lint` checks each skill's frontmatter, that its `name` matches its
+  directory and its description mentions its slash command, that skill files
+  are ASCII-only, and that the skills tables in README.md and AGENTS.md match
+  `skills/` and each other. Run it before committing.
+- `harvest-skill-updates` (under `.agents/skills/`) is a maintenance skill for
+  this repository only. It is not listed in the skills table and is not meant to
+  be copied into projects.
 
 ## Available skills
 
@@ -70,5 +103,5 @@ Each skill should document:
 | `commit-message`   | Generate Git commit messages from diffs using imperative subjects, scannable bodies, and ASCII-only output |
 | `explore-codebase` | Systematically read existing patterns, helpers, and conventions before implementing changes                |
 | `make-todos`       | Decompose work into a tracked task list with proper granularity and sequencing                             |
-| `review-plan`      | Verify an implementation plan for accuracy, correctness, and clarity before executing it                   |
-| `verify-changes`   | Run the project's build/test/lint workflow and check whether documentation needs updating                  |
+| `review-plan`      | Verify an implementation plan for accuracy, correctness, clarity, and completeness before executing it     |
+| `verify-changes`   | Run the full build/test/lint workflow, check the changed behavior, and update affected documentation       |
