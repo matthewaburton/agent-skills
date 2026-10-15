@@ -1,16 +1,11 @@
 ---
 name: commit-message
-description: Generates Git commit messages from staged or unstaged diffs using imperative subjects, optional scannable body, issue footers when applicable, and ASCII-only output. Use when the user asks for a commit message, help committing, or summarizing changes for a commit.
+description: Generates Git commit messages from staged or unstaged diffs using imperative subjects, an optional scannable body, issue footers when applicable, and ASCII-only output. Use when invoked via /commit-message, or when the user asks for a commit message, help committing, or a summary of changes for a commit.
 ---
 
 # Commit Message
 
-Read the project's agent instructions (e.g. AGENTS.md) before applying this skill to ensure conventions are followed.
-
-## When to apply
-
-- User asks for a commit message, help committing, or summarizing changes
-- User invokes `/commit-message`
+Read the project's agent instructions (e.g. AGENTS.md), including any nested AGENTS.md in directories the change touches, before applying this skill. Project commit conventions override the defaults below.
 
 ## Pre-flight
 
