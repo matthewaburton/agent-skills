@@ -21,7 +21,7 @@ Do **not** use this for:
 1. **Read agent instructions.** Read the project's agent instructions (AGENTS.md or equivalent) in full. Pay attention to:
    - Project structure and layer dependencies
    - Conventions and patterns to follow
-   - Critical notes or gotchas (e.g. codec allowlists, dual-write requirements)
+   - Critical notes or gotchas (e.g. generated files that must not be hand-edited, values that must stay in sync across files)
    - Required verification steps
 
 2. **Identify affected areas.** Based on the task, determine which layers, packages, or modules will be touched. Map the task to the project's architecture.
@@ -32,7 +32,7 @@ Do **not** use this for:
    - Test files to understand testing patterns and available fixtures
 
 4. **Find patterns.** Grep for similar constructs:
-   - If adding a new tool/handler/endpoint, find an existing one to follow
+   - If adding a new handler, endpoint, or command, find an existing one to follow
    - If adding a new type or field, find how existing ones are declared and registered
    - If writing tests, find how existing tests set up fixtures and assertions
 

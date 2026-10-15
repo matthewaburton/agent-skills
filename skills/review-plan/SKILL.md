@@ -32,7 +32,7 @@ For each category, here is **how** to verify -- not just what to check.
 
 - **Execution simulation:** For each step, mentally simulate: does the preceding step produce what this step needs as input?
 - **Contradictions:** Does step N undo or conflict with step M?
-- **Missing steps:** Would the plan leave the project in a broken state if stopped after any given step? (e.g. a tool defined but not registered, a struct field added but not in the codec allowlist)
+- **Missing steps:** Would the plan leave the project in a broken state if stopped after any given step? (e.g. a component defined but never registered, a new field added in one place but missing from another that must list it)
 
 ### Clarity
 
@@ -66,15 +66,15 @@ If the plan has associated task items (YAML frontmatter todos, a checklist, or s
 
 ### Task item examples
 
-**Incomplete:** "Update the handler" -- which handler? What change? Better: "Add validation for the `title` argument in `CreateTopicHandler`"
+**Incomplete:** "Update the parser" -- which parser? What change? Better: "Reject empty `name` values in `parseConfig`"
 
-**Composite:** "Add tool and write tests" -- split into "Define tool in tools.go" and "Add handler tests"
+**Composite:** "Add the CSV exporter and write its tests" -- split into "Implement `CsvExporter`" and "Add tests for `CsvExporter`"
 
 **Ambiguous:** "Clean up the code" -- no completion criterion. Better: "Extract duplicate path-validation into a shared helper"
 
 **Trivial:** "Import the uuid package" -- this happens automatically when writing the code that uses it. Remove.
 
-**Misordered:** "Write handler tests" before "Implement handler" -- swap.
+**Misordered:** "Add tests for `CsvExporter`" before "Implement `CsvExporter`" -- swap.
 
 ## Output
 
