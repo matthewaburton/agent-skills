@@ -13,6 +13,9 @@ Before generating a message:
 
 1. **Check for failures:** If the project has a build/test/lint workflow, confirm it passes or the user has acknowledged failures. Do not generate a commit message for code that does not build.
 2. **Determine scope:** If both staged and unstaged changes exist, ask the user which set the message should cover. Do not silently choose.
+3. **Check what belongs in the commit:**
+   - Generated files (lockfiles, generated code, schema dumps, generated docs) are committed together with the source change that produced them.
+   - Build output, coverage reports, local environment files, and secrets never belong in a commit. If any are in the diff, flag them before generating a message.
 
 ## Input (in order of preference)
 
@@ -29,7 +32,7 @@ Before generating a message:
 ## Character policy
 
 - Use **ASCII only** in the commit message.
-- Never use smart punctuation (e.g. curly quotes, em dashes). Use straight apostrophe (`'`), straight quotes (`"`), and hyphens (`-`) only.
+- Never use smart punctuation (e.g. curly quotes, em dashes, the ellipsis character). Use straight apostrophe (`'`), straight quotes (`"`), hyphens (`-`), and three periods (`...`) only.
 - Self-check for non-ASCII before returning. Replace any with ASCII equivalents.
 
 ## Required format
@@ -45,6 +48,7 @@ Closes #<ID> (only if an ID is provided)
 ### Subject line
 
 - **Imperative mood, capitalized, no trailing period.**
+- No `area:` or `type:` prefix (e.g. `api: ...`, `feat: ...`) unless the project's conventions use one.
 - Aim for ~50 characters (hard max 72).
 - Must pass: prepend "If applied, this commit will " to the subject; the result must read as natural English.
 
@@ -58,6 +62,7 @@ Counterexamples (do not do this):
 
 - `Added retry limit to export job` (past tense)
 - `fix pagination bug` (not capitalized)
+- `export: Add retry limit` (area prefix, when the project does not use them)
 - `Update logging library to v2.` (trailing period)
 
 ### Body (optional; prefer WHY over HOW)
