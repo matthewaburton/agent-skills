@@ -1,16 +1,11 @@
 ---
 name: explore-codebase
-description: Systematically explores the codebase before implementing changes. Use at the start of implementation tasks, when unfamiliar with the code, or when the task spans multiple modules or layers.
+description: Systematically explores the codebase -- agent instructions, existing patterns, helpers, and tests -- before implementing changes. Use when invoked via /explore-codebase, at the start of a non-trivial implementation task, when unfamiliar with the code, or when the task spans multiple modules or layers. Not for trivial changes where the target file and pattern are already known.
 ---
 
 # Explore Codebase
 
-## When to apply
-
-- At the start of any non-trivial implementation task
-- When unfamiliar with the codebase or the area of code being changed
-- When the task spans multiple modules, packages, or layers
-- User invokes `/explore-codebase`
+## When not to use
 
 Do **not** use this for:
 - Trivial changes where the target file and pattern are already known
@@ -18,7 +13,7 @@ Do **not** use this for:
 
 ## Procedure
 
-1. **Read agent instructions.** Read the project's agent instructions (AGENTS.md or equivalent) in full. Pay attention to:
+1. **Read agent instructions.** Read the project's agent instructions (AGENTS.md or equivalent) in full, plus any nested AGENTS.md in directories the task touches. Pay attention to:
    - Project structure and layer dependencies
    - Conventions and patterns to follow
    - Critical notes or gotchas (e.g. generated files that must not be hand-edited, values that must stay in sync across files)

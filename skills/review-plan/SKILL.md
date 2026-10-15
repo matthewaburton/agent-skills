@@ -1,17 +1,11 @@
 ---
 name: review-plan
-description: Review implementation plans for accuracy, correctness, and clarity, including any associated task items. Use when reviewing a plan before implementation or when the user asks for plan review.
+description: Reviews implementation plans, including any associated task items, for accuracy, correctness, clarity, and completeness. Use when invoked via /review-plan, when the user asks for a plan review, before implementing a plan or handing it to another agent, or as a self-check after producing or updating a plan.
 ---
 
 # Plan Review
 
-Read the project's agent instructions (e.g. AGENTS.md) before applying this skill to ensure conventions are followed.
-
-## When to apply
-
-- User asks to review a plan before implementation
-- User invokes `/review-plan`
-- After producing or updating a plan and wanting a self-check
+Read the project's agent instructions (e.g. AGENTS.md), plus any nested AGENTS.md in directories the plan touches, before applying this skill.
 
 ## Review directive
 

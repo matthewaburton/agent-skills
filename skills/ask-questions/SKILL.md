@@ -1,17 +1,13 @@
 ---
 name: ask-questions
-description: Gathers structured input from the user through targeted questions with discrete options. Use when invoked via /ask-questions, or when the user says phrases like "ask me questions", "clarify first", "gather requirements", "make sure you have context", or "what do you need to know".
+description: Gathers structured input from the user through targeted questions with discrete options. Use when invoked via /ask-questions, when the user says phrases like "ask me questions", "clarify first", "gather requirements", "check your assumptions", "make sure you have context", or "what do you need to know", or when unknowns would significantly change the approach. Not for a single clarification mid-task or for facts the code, docs, or history can answer.
 ---
 
 # Ask Questions
 
-Read the project's agent instructions (e.g. AGENTS.md) before applying this skill to ensure conventions are followed.
+Read the project's agent instructions (e.g. AGENTS.md), including any nested AGENTS.md in directories you will touch, before applying this skill.
 
-## When to apply
-
-- User explicitly invokes `/ask-questions`
-- User asks you to clarify, gather requirements, or check assumptions before proceeding
-- You face unknowns that would significantly change your approach
+## When not to use
 
 Do **not** use this skill for:
 - Single clarification questions mid-task (just ask inline)

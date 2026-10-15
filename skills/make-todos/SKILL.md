@@ -1,17 +1,13 @@
 ---
 name: make-todos
-description: Creates a structured task list for the current work. Use when the user invokes /make-todos, or when the task involves multiple steps where later steps depend on earlier ones completing first.
+description: Creates a structured task list for the current work and works through it in order. Use when invoked via /make-todos, when the work has multiple steps where later steps depend on earlier ones completing first, or when scope is uncertain and the plan should be visible before starting. Not for single-step, conversational, or obviously linear tasks.
 ---
 
 # Make Todos
 
-Read the project's agent instructions (e.g. AGENTS.md) before applying this skill to ensure conventions are followed.
+Read the project's agent instructions (e.g. AGENTS.md), including any nested AGENTS.md in directories you will touch, before applying this skill.
 
-## When to apply
-
-- User explicitly invokes `/make-todos`
-- The work involves multiple steps with dependencies or sequencing requirements
-- You are uncertain about scope and want to make the plan visible before starting
+## When not to use
 
 Do **not** create a task list for:
 - Single-step tasks or trivial changes

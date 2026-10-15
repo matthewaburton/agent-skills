@@ -1,18 +1,11 @@
 ---
 name: verify-changes
-description: Runs the project's build, test, and lint workflow and checks whether documentation needs updating. Use after completing implementation work, before committing, or when the user says "verify", "check", or "are we done".
+description: Runs the project's build, test, and lint workflow and checks whether documentation needs updating. Use when invoked via /verify-changes, after completing implementation work, before committing, or when the user says "verify", "check", or "are we done".
 ---
 
 # Verify Changes
 
-Read the project's agent instructions (e.g. AGENTS.md) before applying this skill to ensure the correct verification commands and documentation requirements are known.
-
-## When to apply
-
-- After completing implementation work
-- Before generating a commit message
-- User says "verify," "check," or "are we done?"
-- User invokes `/verify-changes`
+Read the project's agent instructions (e.g. AGENTS.md), plus any nested AGENTS.md in directories you changed, before applying this skill, so the correct verification commands and documentation requirements are known.
 
 ## Procedure
 
