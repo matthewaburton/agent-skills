@@ -7,7 +7,8 @@ repository.
 (purpose, skill structure, deployment, customizing copies, authoring
 guidelines, repository maintenance, and the available skills table). When
 updating one, check whether the change applies to the other and keep them
-consistent. `make lint` checks that the skills tables match.
+consistent. `make lint` checks that the skills tables and the shared sections
+match.
 
 ## Purpose
 
@@ -89,8 +90,9 @@ optional. Keep skill files ASCII-only.
 
 - `make lint` checks each skill's frontmatter, that its `name` matches its
   directory and its description mentions its slash command, that skill files
-  are ASCII-only, and that the skills tables in README.md and AGENTS.md match
-  `skills/` and each other. Run it before committing.
+  are ASCII-only, that the skills tables in README.md and AGENTS.md match
+  `skills/` and each other, and that the sections the two files share are
+  identical. Run it before committing.
 - `harvest-skill-updates` (under `.agents/skills/`) is a maintenance skill for
   this repository only. It is not listed in the skills table and is not meant to
   be copied into projects.

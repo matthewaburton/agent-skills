@@ -7,7 +7,8 @@
 #   - a description that mentions the slash command (`/<name>`)
 #   - ASCII-only content
 # Then checks that the "Available skills" tables in README.md and AGENTS.md
-# list exactly the skills under skills/ and are identical to each other.
+# list exactly the skills under skills/ and are identical to each other, and
+# that the prose sections the two files share are identical.
 #
 # Usage: scripts/lint-skills.sh   (run from anywhere inside the repo)
 
@@ -111,6 +112,29 @@ done
 
 if [ -f README.md ] && [ -f AGENTS.md ] && [ "$(skills_table README.md)" != "$(skills_table AGENTS.md)" ]; then
   fail "README.md and AGENTS.md skills tables differ"
+fi
+
+# Print the body of a "## <heading>" section of a file.
+section() {
+  awk -v heading="## $2" '
+    /^## / { in_section = ($0 == heading); next }
+    in_section { print }
+  ' "$1"
+}
+
+# Sections README.md and AGENTS.md both carry and must keep word for word.
+shared_sections=("Skill structure" "Customizing copies" "Writing new skills" "Maintaining this repository")
+
+if [ -f README.md ] && [ -f AGENTS.md ]; then
+  for heading in "${shared_sections[@]}"; do
+    readme_section="$(section README.md "$heading")"
+    agents_section="$(section AGENTS.md "$heading")"
+    if [ -z "$readme_section" ] || [ -z "$agents_section" ]; then
+      fail "\"## $heading\" section missing from README.md or AGENTS.md"
+    elif [ "$readme_section" != "$agents_section" ]; then
+      fail "\"## $heading\" differs between README.md and AGENTS.md (first difference at section line $(diff <(echo "$readme_section") <(echo "$agents_section") | head -n 1 | sed 's/[^0-9].*//'))"
+    fi
+  done
 fi
 
 if [ "$failures" -gt 0 ]; then
