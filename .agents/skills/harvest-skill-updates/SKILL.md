@@ -37,7 +37,13 @@ Your report to the user may say where an idea came from. Committed text may not.
    .agents/skills/harvest-skill-updates/scripts/find-skill-copies.sh --diff <copy-path>
    ```
 
-   The script infers the starting version from the closest committed version that is not newer than the copy, so no one has to record it when copying. Only `SKILL.md` is compared; list the copy's skill directory to check for added scripts or references.
+   The script infers the starting version from the closest committed version that is not newer than the copy, so no one has to record it when copying. That inference is a best guess, not a fact. If the diff shows the copy *removing* text that a later generic version added, or *adding* text that a later generic version also added, the copy probably started from a different version. List the candidates with `git log --oneline -- skills/<name>/SKILL.md` and compare against one explicitly:
+
+   ```
+   .agents/skills/harvest-skill-updates/scripts/find-skill-copies.sh --diff <copy-path> <commit>
+   ```
+
+   Only `SKILL.md` is compared; list the copy's skill directory to check for added scripts or references.
 
 3. **Classify every change** in the diff:
    - **General improvement**: a rule, check, or procedure step that would help in any project
