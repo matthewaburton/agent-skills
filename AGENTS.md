@@ -100,7 +100,7 @@ optional. Keep skill files ASCII-only.
 | Skill              | Purpose                                                                                                    |
 |--------------------|------------------------------------------------------------------------------------------------------------|
 | `ask-questions`    | Gather structured requirements through targeted questions with discrete options before starting work       |
-| `commit-message`   | Generate Git commit messages from diffs using imperative subjects, scannable bodies, and ASCII-only output |
+| `commit-message`   | Generate Beams-style commit messages with imperative subjects, what-and-why bodies, and ASCII-only output  |
 | `explore-codebase` | Systematically read existing patterns, helpers, and conventions before implementing changes                |
 | `make-todos`       | Decompose work into a tracked task list with proper granularity and sequencing                             |
 | `review-plan`      | Verify an implementation plan for accuracy, correctness, clarity, and completeness before executing it     |

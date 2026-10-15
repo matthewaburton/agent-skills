@@ -1,6 +1,6 @@
 ---
 name: commit-message
-description: Generates Git commit messages from staged or unstaged diffs using imperative subjects, an optional scannable body, issue footers when applicable, and ASCII-only output. Use when invoked via /commit-message, or when the user asks for a commit message, help committing, or a summary of changes for a commit.
+description: Generates Git commit messages in the Chris Beams style from staged or unstaged diffs, with imperative subjects of 50 characters or fewer, a body that explains what and why, issue footers when applicable, and ASCII-only output. Use when invoked via /commit-message, or when the user asks for a commit message, help committing, or a summary of changes for a commit.
 ---
 
 # Commit Message
@@ -49,8 +49,8 @@ Closes #<ID> (only if an ID is provided)
 
 - **Imperative mood, capitalized, no trailing period.**
 - No `area:` or `type:` prefix (e.g. `api: ...`, `feat: ...`) unless the project's conventions use one.
-- Aim for ~50 characters (hard max 72).
-- Must pass: prepend "If applied, this commit will " to the subject; the result must read as natural English.
+- Keep it to 50 characters or fewer. Needing more usually means the subject is vague or the commit does too much (see Multi-concern diffs). 72 is the hard limit.
+- Must pass: prepend "If applied, this commit will " to the subject; the result must read as natural English **and** say what actually changes. "Improve the parser" passes the grammar test and says nothing.
 
 Examples:
 
@@ -65,30 +65,22 @@ Counterexamples (do not do this):
 - `export: Add retry limit` (area prefix, when the project does not use them)
 - `Update logging library to v2.` (trailing period)
 
-### Body (optional; prefer WHY over HOW)
+### Body (optional; what and why, not how)
 
 - **Omit** if the diff is truly trivial (e.g. typo, formatting, comment-only) **and** there is no meaningful motivation to record.
 - Wrap at 72 characters.
-- Start with 1-2 sentences explaining motivation or impact (avoid restating the subject). "This commit ..." is encouraged if natural, but not required.
-- Add labeled sections for scannability when helpful:
-
-  ```
-  Features:
-  - ...
-  Changes:
-  - ...
-  Fixes:
-  - ...
-  ```
-
-- Use `-` bullets. Sub-bullets: indent 2 spaces. Wrapped continuation: 2 additional spaces.
-- Reference files, modules, functions, or symbols in `backticks`.
-- Quantify impact when supported by the diff or context (e.g. lines removed, build time).
+- Explain what was wrong or missing, why this change fixes it, and any consequences a reader would not see in the diff (side effects, limitations, follow-up work). Leave *how* to the diff.
+- Write prose paragraphs separated by blank lines. Do not restate the subject. Opening with "This commit ..." is fine when it reads naturally.
+- Bullets (`-`) are fine for a list of distinct reasons or effects. Never use them to list the edits file by file or step by step; the diff already shows that. Sub-bullets: indent 2 spaces. Wrapped continuation: 2 additional spaces.
+- Do not add labeled sections such as `Features:`, `Changes:`, or `Fixes:`. They turn the body into a changelog, and `Fixes:` can be mistaken for an issue trailer.
+- Reference files, modules, functions, or symbols in `backticks` when it helps the reader.
+- Quantify impact only when supported by the diff or context (e.g. lines removed, build time).
 
 ### Trailers
 
 - Do not add Co-Authored-By, Signed-off-by, or other trailers unilaterally. Include only when the user or environment explicitly requests them.
 - Place trailers after a blank line following the body (or subject if no body).
+- Issue references are trailers too (e.g. `Closes #123`). They go at the bottom, never in the body.
 - ASCII-only rule applies to trailers.
 
 ### Contextual logic
@@ -102,7 +94,7 @@ Counterexamples (do not do this):
 When a diff spans multiple unrelated concerns (e.g. a refactor + a new feature + a typo fix):
 
 1. **Flag it:** Tell the user the diff contains distinct concerns and suggest splitting into separate commits.
-2. **If the user wants one commit:** Use the primary change as the subject. Use labeled sections in the body to cover secondary concerns.
+2. **If the user wants one commit:** Use the primary change as the subject. Give each secondary concern its own short paragraph in the body explaining what and why.
 3. **If the user wants to split:** Suggest which files or hunks belong to which commit.
 
 ## Anti-patterns
@@ -129,12 +121,12 @@ rules, so the same input could be accepted in one place and
 rejected in another. This commit moves parsing into one helper
 so all callers behave the same way.
 
-- Add `parseDate` with the strictest of the existing rules
-- Update the three call sites to use `parseDate`
-- Add tests covering the inputs the call sites disagreed on
+The helper uses the strictest of the existing rules. Inputs that
+only the most lenient call site accepted, such as two-digit
+years, are now rejected everywhere.
 ```
 
-**With issue reference:**
+**With bullets and an issue reference:**
 
 ```
 Add retry limit to export job
@@ -143,9 +135,11 @@ Failed exports were retried indefinitely, so a permanent error
 kept a worker busy forever. This commit caps retries and marks
 the job failed once the limit is reached.
 
-Fixes:
-- Jobs retrying forever on a permanent error
-- No failure status recorded for abandoned exports
+This has two visible effects:
+
+- A job that hits the limit now shows as failed instead of
+  staying in progress forever
+- Workers stuck on permanent errors are freed for other jobs
 
 Closes #123
 ```
