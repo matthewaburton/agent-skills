@@ -7,13 +7,18 @@
 #       List copies of each skill under <projects-dir>, grouped by content.
 #       --verbose also lists the paths of copies identical to the current
 #       generic version (otherwise only their count is shown).
-#   find-skill-copies.sh --diff <copy-path>
-#       Print a unified diff from the inferred starting version to the copy.
+#   find-skill-copies.sh --diff <copy-path> [<commit>]
+#       Print a unified diff from the inferred starting version (or from
+#       <commit>, if given) to the copy.
 #
 # The starting version ("base") is inferred, not recorded: the copy is
 # diffed against every committed version of the matching skills/<name>/SKILL.md
-# and the closest one wins (ties go to the newest commit). A copy is matched to
-# a generic skill by its frontmatter `name`, falling back to its directory name.
+# that is not newer than the copy, and the closest one wins (ties go to the
+# newest commit). This is a best guess. If a later generic version happens to
+# be textually closer than the one the project started from, the guess is
+# wrong; pass <commit> to --diff to compare against a different version.
+# Changes are reported as +added/-removed lines. A copy is matched to a
+# generic skill by its frontmatter `name`, falling back to its directory name.
 #
 # Skipped while searching: .git, node_modules, .claude/worktrees, and this
 # repository itself. Only SKILL.md files are compared; sibling files in a
@@ -28,7 +33,7 @@ repo="$(cd "$script_dir" && git rev-parse --show-toplevel)" || {
 }
 
 usage() {
-  sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
+  awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0"
   exit 2
 }
 
@@ -61,27 +66,35 @@ match_skill() {
   done
 }
 
-# Print "<base-commit> <changed-lines> <dated|predates>" for a copy of the
+# Print "<added> <removed>" lines going from a skill's version at a commit to
+# the copy.
+count_changes() {
+  local skill="$1" commit="$2" copy="$3" changes
+  changes="$(git -C "$repo" show "$commit:skills/$skill/SKILL.md" 2>/dev/null | diff - "$copy")"
+  echo "$(echo "$changes" | grep -c '^>') $(echo "$changes" | grep -c '^<')"
+}
+
+# Print "<base-commit> <added> <removed> <dated|predates>" for a copy of the
 # given skill. Commits made after the copy was last modified cannot be its
 # base, so they are skipped (with a day of slack for copies that kept an
 # older timestamp). If every commit is newer than the copy, the copy predates
 # the repository's history and the closest version overall is reported.
 infer_base() {
-  local skill="$1" copy="$2" cutoff commit when lines pass
+  local skill="$1" copy="$2" cutoff commit when added removed pass
   cutoff=$(($(mtime "$copy") + 86400))
   for pass in dated predates; do
-    local best_commit="" best_lines=""
+    local best_commit="" best_added="" best_removed=""
     while read -r commit when; do
       [ "$pass" = dated ] && [ "$when" -gt "$cutoff" ] && continue
-      lines="$(git -C "$repo" show "$commit:skills/$skill/SKILL.md" 2>/dev/null \
-        | diff - "$copy" | grep -c '^[<>]')"
-      if [ -z "$best_lines" ] || [ "$lines" -lt "$best_lines" ]; then
+      read -r added removed <<<"$(count_changes "$skill" "$commit" "$copy")"
+      if [ -z "$best_commit" ] || [ $((added + removed)) -lt $((best_added + best_removed)) ]; then
         best_commit="$commit"
-        best_lines="$lines"
+        best_added="$added"
+        best_removed="$removed"
       fi
     done < <(git -C "$repo" log --format='%h %ct' -- "skills/$skill/SKILL.md")
     if [ -n "$best_commit" ]; then
-      echo "$best_commit $best_lines $pass"
+      echo "$best_commit $best_added $best_removed $pass"
       return
     fi
   done
@@ -92,12 +105,21 @@ latest_commit() {
 }
 
 if [ "${1:-}" = "--diff" ]; then
-  [ $# -eq 2 ] || usage
+  [ $# -eq 2 ] || [ $# -eq 3 ] || usage
   copy="$2"
   [ -f "$copy" ] || { echo "error: no such file: $copy" >&2; exit 1; }
   skill="$(match_skill "$copy")"
   [ -n "$skill" ] || { echo "error: $copy does not match any skill in $repo/skills" >&2; exit 1; }
-  read -r base _ _ <<<"$(infer_base "$skill" "$copy")"
+  if [ $# -eq 3 ]; then
+    base="$3"
+    git -C "$repo" cat-file -e "$base:skills/$skill/SKILL.md" 2>/dev/null || {
+      echo "error: skills/$skill/SKILL.md does not exist at $base" >&2
+      echo "versions: $(git -C "$repo" log --format=%h -- "skills/$skill/SKILL.md" | paste -sd' ' -)" >&2
+      exit 1
+    }
+  else
+    read -r base _ _ _ <<<"$(infer_base "$skill" "$copy")"
+  fi
   git -C "$repo" show "$base:skills/$skill/SKILL.md" \
     | diff -u --label "$skill@$base" --label "$copy" - "$copy"
   exit 0
@@ -141,7 +163,8 @@ for skill in $(cut -f1 "$records" | grep -v '^-$' | sort -u); do
     paths="$(awk -F'\t' -v s="$skill" -v h="$hash" '$1 == s && $3 == h { print $5 }' "$records")"
     count="$(echo "$paths" | wc -l | tr -d ' ')"
     newest="$(awk -F'\t' -v s="$skill" -v h="$hash" '$1 == s && $3 == h { print $4 }' "$records" | sort -nr | head -n 1)"
-    read -r base lines dating <<<"$(infer_base "$skill" "$(echo "$paths" | head -n 1)")"
+    read -r base added removed dating <<<"$(infer_base "$skill" "$(echo "$paths" | head -n 1)")"
+    lines=$((added + removed))
 
     if [ "$lines" -eq 0 ] && [ "$base" = "$latest" ]; then
       echo "  identical to current: $count copy(ies)"
@@ -150,11 +173,11 @@ for skill in $(cut -f1 "$records" | grep -v '^-$' | sort -u); do
     fi
 
     if [ "$dating" = predates ]; then
-      status="predates the repository's history: $lines line(s) differ from the closest version, $base"
+      status="predates the repository's history: +$added/-$removed lines vs the closest version, $base"
     elif [ "$lines" -eq 0 ]; then
       status="unchanged copy of $base; generic version has changed since"
     else
-      status="diverged: $lines line(s) changed vs base $base"
+      status="diverged: +$added/-$removed lines vs base $base"
       [ "$base" != "$latest" ] && status="$status; generic version has changed since $base"
     fi
     echo "  $status; newest $(format_date "$newest"); $count copy(ies)"
