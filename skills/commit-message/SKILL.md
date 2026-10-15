@@ -14,7 +14,7 @@ Before generating a message:
 1. **Check for failures:** If the project has a build/test/lint workflow, confirm it passes or the user has acknowledged failures. Do not generate a commit message for code that does not build.
 2. **Determine scope:** If both staged and unstaged changes exist, ask the user which set the message should cover. Do not silently choose.
 3. **Check what belongs in the commit:**
-   - Generated files (lockfiles, generated code, schema dumps, generated docs) are committed together with the source change that produced them.
+   - If the project tracks generated files (lockfiles, generated code, schema dumps, generated docs), they are committed together with the source change that produced them. Generated files the project ignores stay out.
    - Build output, coverage reports, local environment files, and secrets never belong in a commit. If any are in the diff, flag them before generating a message.
 
 ## Input (in order of preference)
