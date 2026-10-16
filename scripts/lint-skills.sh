@@ -123,7 +123,7 @@ section() {
 }
 
 # Sections README.md and AGENTS.md both carry and must keep word for word.
-shared_sections=("Skill structure" "Customizing copies" "Writing new skills" "Maintaining this repository")
+shared_sections=("Skill structure" "Deploying skills to a project" "Customizing copies" "Writing new skills" "Maintaining this repository")
 
 if [ -f README.md ] && [ -f AGENTS.md ]; then
   for heading in "${shared_sections[@]}"; do

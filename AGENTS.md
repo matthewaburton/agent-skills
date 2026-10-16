@@ -37,7 +37,7 @@ The frontmatter fields:
 - `description`: Summary the agent harness uses to decide when to apply the
   skill; include the slash command, trigger phrases, and key exclusions here
 
-## Deploying skills to a target project
+## Deploying skills to a project
 
 Copy the skill directory into `.agents/skills/` in the target project:
 
