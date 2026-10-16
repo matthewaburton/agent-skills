@@ -48,7 +48,7 @@ Your report to the user may say where an idea came from. Committed text may not.
 3. **Classify every change** in the diff:
    - **General improvement**: a rule, check, or procedure step that would help in any project
    - **Project-specific**: depends on the project's tools, layout, or domain. Leave it.
-   - **Generalizable**: project-specific as written, but an instance of a general pattern (e.g. a project's checklist of files to touch when adding a new event type is an instance of "a new entry of a kind listed in several places"). Harvest the pattern, not the instance.
+   - **Generalizable**: project-specific as written, but an instance of a general pattern (e.g. a project's checklist of files to touch when adding a new payment method is an instance of "a new entry of a kind listed in several places"). Harvest the pattern, not the instance.
    - **Lost or regressed**: the copy dropped something the generic version still needs. Usually not a harvest item; note it only if the removal looks deliberate and the reason applies generally.
    - **Already covered**: the generic version says the same thing.
 
