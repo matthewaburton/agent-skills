@@ -5,6 +5,9 @@ Reusable, project-agnostic [skills for AI agents](https://agentskills.io/)
 that agents follow when invoked -- no project-specific references, so they work
 across any codebase as a starting point you customize per project.
 
+> [!TIP]
+> Be sure to check out [Agent Skills > Quickstart](https://agentskills.io/skill-creation/quickstart)
+
 ## Available skills
 
 | Skill              | Purpose                                                                                                    |
@@ -27,9 +30,6 @@ cp -r skills/<skill-name> <target-project>/.agents/skills/
 Target projects are expected to have `.claude/skills/` and `.cursor/skills/` as
 symlinks pointing to `../.agents/skills/`, so no further wiring is needed after
 the copy.
-
-> [!TIP]
-> Be sure to check out [Agent Skills > Quickstart](https://agentskills.io/skill-creation/quickstart)
 
 ## Customizing copies
 
